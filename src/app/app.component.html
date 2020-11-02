@@ -1,5 +1,8 @@
-<h1>Fun Of Heuristic V5.</h1>
 <button (click)="postSync()">Post Data</button>
-<div *ngFor="let emp of apiData">
+<!-- <div *ngFor="let emp of apiData">
   <h2>{{emp.employee_name}}</h2>
-</div>
+</div> -->
+
+<ng-container *ngIf="allUsers">
+  {{allUsers | json}}
+</ng-container>

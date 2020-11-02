@@ -12,6 +12,7 @@ import { IndexedDBService } from './services/indexed-db.service';
 export class AppComponent implements OnInit {
   title = 'Angular-pwa';
   apiData: any;
+  allUsers: any
   private readonly publicKey =
     'BJkUsZs9QYXvusPKt-2SJ_LZD8Y6L3HHEJjP9rVNaiBgjOCr5aLyGMGGJelLMi4eh-2M7SyRbQPZvEok1iYtTuA';
   constructor(
@@ -21,27 +22,27 @@ export class AppComponent implements OnInit {
     private swPush: SwPush,
     private indexedDBService: IndexedDBService
   ) {
-    this.updateClient();
-    this.checkUpdate();
+    // this.updateClient();
+    // this.checkUpdate();
   }
 
   ngOnInit() {
-    this.pushSubscription();
+    // this.pushSubscription();
 
-    this.swPush.messages.subscribe((message) => console.log(message));
+    // this.swPush.messages.subscribe((message) => console.log(message));
 
-    this.swPush.notificationClicks.subscribe(({ action, notification }) => {
-      window.open(notification.data.url);
-    });
+    // this.swPush.notificationClicks.subscribe(({ action, notification }) => {
+    //   window.open(notification.data.url);
+    // });
 
-    this.http.get('http://dummy.restapiexample.com/api/v1/employees').subscribe(
-      (res: any) => {
-        this.apiData = res.data;
-      },
-      (err) => {
-        console.error(err);
-      }
-    );
+    // this.http.get('http://dummy.restapiexample.com/api/v1/employees').subscribe(
+    //   (res: any) => {
+    //     this.apiData = res.data;
+    //   },
+    //   (err) => {
+    //     console.error(err);
+    //   }
+    // );
   }
 
   updateClient() {
@@ -93,21 +94,33 @@ export class AppComponent implements OnInit {
 
   postSync() {
     let obj = {
-      name: 'Subrat',
+      name: 'test',
+      number: Math.floor(Math.random() * 1000) + 1
     };
     //api call
-    this.http.post('http://localhost:3000/data', obj).subscribe(
+    this.http.post('https://api.npoint.io/b331ecf08dddd718044d', obj).subscribe(
       (res) => {
         console.log(res);
       },
       (err) => {
+
         this.indexedDBService
-          .addUser(obj.name)
+          .addUser(obj)
           .then(this.backgroundSync)
           .catch(console.log);
+        this.getAllUsers()
+
         //this.backgroundSync();
       }
     );
+  }
+
+
+  getAllUsers() {
+    this.indexedDBService.getAllUsers().then((res) => {
+      this.allUsers = res
+      console.log('all users', res)
+    })
   }
 
   backgroundSync() {

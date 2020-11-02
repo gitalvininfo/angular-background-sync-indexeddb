@@ -13,13 +13,19 @@ export class IndexedDBService {
   async connectToDb() {
     this.db = await openDB<MyDB>('my-db', 1, {
       upgrade(db) {
-        db.createObjectStore('user-store');
+        db.createObjectStore('user-store', {
+          keyPath: "number"
+        });
       },
     });
   }
 
-  addUser(name: string) {
-    return this.db.put('user-store', name, 'name');
+  addUser(name: any) {
+    return this.db.add('user-store', name);
+  }
+
+  getAllUsers() {
+    return this.db.getAll('user-store');
   }
 
   deleteUser(key: string) {
@@ -30,6 +36,9 @@ export class IndexedDBService {
 interface MyDB extends DBSchema {
   'user-store': {
     key: string;
-    value: string;
+    value: {
+      name: string,
+      number: any
+    };
   };
 }

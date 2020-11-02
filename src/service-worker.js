@@ -7,21 +7,6 @@ self.addEventListener('sync', (event) => {
   }
 });
 
-function addData(userName) {
-  //indexDb
-  let obj = {
-    name: userName,
-  };
-  fetch('http://localhost:3000/data', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(obj),
-  })
-    .then(() => Promise.resolve())
-    .catch(() => Promise.reject());
-}
 
 function getDataAndSend() {
   let db;
@@ -38,13 +23,38 @@ function getDataAndSend() {
 function getData(db) {
   const transaction = db.transaction(['user-store']);
   const objectStore = transaction.objectStore('user-store');
-  const request = objectStore.get('name');
+  // const request = objectStore.get('name');
+  const request = objectStore.getAll()
   request.onerror = (event) => {
     // Handle errors!
   };
   request.onsuccess = (event) => {
     // Do something with the request.result!
     addData(request.result);
-    console.log('Name of the user is ' + request.result);
+    console.log('Name of the user is ' + JSON.stringify(request.result));
   };
+}
+
+function addData(data) {
+  //indexDb
+  // let obj = {
+  //   name: userName,
+  // };
+
+  for (var dt of data) {
+    fetch('https://api.npoint.io/b331ecf08dddd718044d', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: dt.name,
+        number: dt.number
+      }),
+    })
+      .then(() => Promise.resolve())
+      .catch(() => Promise.reject());
+  }
+
+
 }
